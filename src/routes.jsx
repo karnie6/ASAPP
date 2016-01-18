@@ -6,11 +6,11 @@ var Route = ReactRouter.Route;
 var browserHistory = ReactRouter.browserHistory;
 
 var Base = require('./components/Base.jsx');
-var Chatroom = require('./components/Chatroom.jsx');
+var Signup = require('./components/Signup.jsx');
 
 var Routes = (
   <Router history={browserHistory}>
-    <Route path="/" component={Base}>
+    <Route path="/" component={Signup}>
     </Route>
   </Router>
 

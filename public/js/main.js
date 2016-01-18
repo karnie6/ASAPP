@@ -23813,39 +23813,116 @@ module.exports = Base;
 },{"react":217}],220:[function(require,module,exports){
 var React = require('react');
 
-var Chatroom = React.createClass({
-  displayName: "Chatroom",
+var DisplayNameComponent = React.createClass({
+  displayName: "DisplayNameComponent",
 
+  getInitialState: function () {
+    return { value: "" };
+  },
+  onChange: function (e) {
+    this.setState({ value: e.target.value });
+  },
   render: function () {
     return React.createElement(
       "div",
       null,
       React.createElement(
-        "div",
-        { "class": "cr-userbox" },
-        React.createElement(
-          "h3",
-          { "class": "userName" },
-          "Hello ",
-          { user },
-          ", choose the chatroom you'd like to enter:"
-        )
+        "h3",
+        null,
+        "Step #1: Choose a Display Name"
       ),
-      React.createElement("div", { "class": "cr-roomlist" })
+      React.createElement("input", { className: "form-control", placeholder: "Enter your display name", onChange: this.onChange, value: this.state.value })
     );
   }
 });
 
-module.exports = Chatroom;
+module.exports = DisplayNameComponent;
 
 },{"react":217}],221:[function(require,module,exports){
+var React = require('react');
+var DisplayNameComponent = require('./DisplayNameComponent.jsx');
+
+var Rooms = React.createClass({
+  displayName: 'Rooms',
+
+  getInitialState: function () {
+    return { rooms: ["Room A", "Room B", "Room C"] };
+  },
+  render: function () {
+    var chatRooms = [];
+    for (var i = 0; i < this.state.rooms.length; i++) {
+      chatRooms.push(React.createElement(
+        'li',
+        null,
+        this.state.rooms[i]
+      ));
+    }
+
+    return React.createElement(
+      'div',
+      null,
+      React.createElement(
+        'div',
+        { 'class': 'cr-userbox' },
+        React.createElement(
+          'h3',
+          { 'class': 'userName' },
+          'Hello ',
+          this.props.displayName,
+          ', choose the chatroom you\'d like to enter:'
+        )
+      ),
+      React.createElement('div', { 'class': 'cr-roomlist' }),
+      React.createElement(
+        'ul',
+        { 'class': 'roomlist' },
+        chatRooms
+      )
+    );
+  }
+});
+
+module.exports = Rooms;
+
+},{"./DisplayNameComponent.jsx":220,"react":217}],222:[function(require,module,exports){
+var React = require('react');
+var DisplayNameComponent = require('./DisplayNameComponent.jsx');
+var Rooms = require('./Rooms.jsx');
+
+var Signup = React.createClass({
+  displayName: 'Signup',
+
+  getInitialState: function () {
+    return { showRooms: false };
+  },
+  onSubmit: function () {
+    this.setState({ showRooms: true });
+  },
+  render: function () {
+    return React.createElement(
+      'div',
+      null,
+      React.createElement(DisplayNameComponent, { ref: 'displayName' }),
+      React.createElement(
+        'button',
+        { className: 'btn btn-primary', onClick: this.onSubmit },
+        'Find A Room'
+      ),
+      this.state.showRooms ? React.createElement(Rooms, { displayName: this.refs.displayName.state.value }) : null
+    );
+  }
+});
+
+module.exports = Signup;
+
+},{"./DisplayNameComponent.jsx":220,"./Rooms.jsx":221,"react":217}],223:[function(require,module,exports){
 var React = require('react');
 var ReactDom = require('react-dom');
 var routes = require('./routes.jsx');
 
 ReactDom.render(routes, document.getElementById('main'));
 
-},{"./routes.jsx":222,"react":217,"react-dom":25}],222:[function(require,module,exports){
+},{"./routes.jsx":224,"react":217,"react-dom":25}],224:[function(require,module,exports){
 var React = require('react');
 var ReactRouter = require('react-router');
 
@@ -23854,14 +23931,14 @@ var Route = ReactRouter.Route;
 var browserHistory = ReactRouter.browserHistory;
 
 var Base = require('./components/Base.jsx');
-var Chatroom = require('./components/Chatroom.jsx');
+var Signup = require('./components/Signup.jsx');
 
 var Routes = React.createElement(
   Router,
   { history: browserHistory },
-  React.createElement(Route, { path: '/', component: Base })
+  React.createElement(Route, { path: '/', component: Signup })
 );
 
 module.exports = Routes;
 
-},{"./components/Base.jsx":219,"./components/Chatroom.jsx":220,"react":217,"react-router":53}]},{},[221]);
+},{"./components/Base.jsx":219,"./components/Signup.jsx":222,"react":217,"react-router":53}]},{},[223]);
