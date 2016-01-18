@@ -1,4 +1,4 @@
-module.exports = function(express, app, rooms){
+module.exports = function(express, app, config, rooms){
 	var router = express.Router();
 
 	router.get('/', function(req, res, next){
