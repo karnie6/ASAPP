@@ -1,3 +1,4 @@
 {
-  "sessionSecret": "JDJOSEMLMX90SDKJK"
+  "sessionSecret": "JDJOSEMLMX90SDKJK",
+  "host": "http://localhost:3000"
 }
