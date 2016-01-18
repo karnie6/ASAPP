@@ -23845,16 +23845,14 @@ var DisplayNameComponent = require('./DisplayNameComponent.jsx');
 var Rooms = React.createClass({
   displayName: 'Rooms',
 
-  getInitialState: function () {
-    return { rooms: ["Room A", "Room B", "Room C"] };
-  },
   render: function () {
     var chatRooms = [];
-    for (var i = 0; i < this.state.rooms.length; i++) {
+
+    for (var i = 0; i < this.props.rooms.length; i++) {
       chatRooms.push(React.createElement(
         'li',
         null,
-        this.state.rooms[i]
+        this.props.rooms[i]
       ));
     }
 
@@ -23867,9 +23865,9 @@ var Rooms = React.createClass({
         React.createElement(
           'h3',
           { 'class': 'userName' },
-          'Hello ',
+          'Step #2: Hello ',
           this.props.displayName,
-          ', choose the chatroom you\'d like to enter:'
+          ', please choose the chatroom you\'d like to enter:'
         )
       ),
       React.createElement('div', { 'class': 'cr-roomlist' }),
@@ -23888,27 +23886,43 @@ module.exports = Rooms;
 var React = require('react');
 var DisplayNameComponent = require('./DisplayNameComponent.jsx');
 var Rooms = require('./Rooms.jsx');
+var socket = io.connect('/roomlist');
 
 var Signup = React.createClass({
   displayName: 'Signup',
 
   getInitialState: function () {
-    return { showRooms: false };
+    return { showDisplayName: true, showRooms: false, rooms: [] };
+  },
+  componentDidMount: function () {
+    socket.on('connect', this.initialize);
+    socket.on('roomupdate', this.updateRooms);
+  },
+  initialize: function (data) {
+    console.log("Websocket connected!");
+  },
+  updateRooms: function (data) {
+    var roomData = JSON.parse(data);
+    this.setState({ rooms: roomData });
   },
   onSubmit: function () {
-    this.setState({ showRooms: true });
+    this.setState({ showDisplayName: false, showRooms: true });
   },
   render: function () {
     return React.createElement(
       'div',
       null,
-      React.createElement(DisplayNameComponent, { ref: 'displayName' }),
-      React.createElement(
-        'button',
-        { className: 'btn btn-primary', onClick: this.onSubmit },
-        'Find A Room'
-      ),
-      this.state.showRooms ? React.createElement(Rooms, { displayName: this.refs.displayName.state.value }) : null
+      this.state.showDisplayName ? React.createElement(
+        'div',
+        null,
+        React.createElement(DisplayNameComponent, { ref: 'displayName' }),
+        React.createElement(
+          'button',
+          { className: 'btn btn-primary', onClick: this.onSubmit },
+          'Find A Room'
+        )
+      ) : null,
+      this.state.showRooms ? React.createElement(Rooms, { rooms: this.state.rooms, displayName: this.refs.displayName.state.value }) : null
     );
   }
 });
