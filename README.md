@@ -1,5 +1,5 @@
 #Welcome
-This is my pass at solving the Front-End / Full Stack real-time chat server.  
+This is my pass at implementing the Front-End / Full Stack real-time chat server.  
 
 #Setting up
 To run by checking out, follow these steps:
