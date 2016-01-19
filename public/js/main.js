@@ -23834,6 +23834,21 @@ var ASAPPChatApp = React.createClass({
       return React.createElement(Chatroom, { chatRoomSelected: this.state.chatRoomSelected, hideChatRooms: this.hideChatRooms, showChatRooms: this.showChatRooms, name: room.name, user: this.state.user, id: room.id });
     };
 
+    var buttonHtml;
+    if (this.state.user == '') {
+      buttonHtml = React.createElement(
+        'button',
+        { className: 'btn btn-primary', onClick: this.onSubmit, disabled: 'disabled' },
+        'Find A Room'
+      );
+    } else {
+      buttonHtml = React.createElement(
+        'button',
+        { className: 'btn btn-primary', onClick: this.onSubmit },
+        'Find A Room'
+      );
+    }
+
     return React.createElement(
       'div',
       null,
@@ -23843,26 +23858,15 @@ var ASAPPChatApp = React.createClass({
         React.createElement(
           'h3',
           null,
-          'Step #1: Choose a Display Name'
+          'Choose a Display Name'
         ),
         React.createElement('input', { className: 'form-control', placeholder: 'Enter your display name',
           onChange: this.onDisplayNameChange, value: this.state.user }),
-        React.createElement(
-          'button',
-          { className: 'btn btn-primary', onClick: this.onSubmit },
-          'Find A Room'
-        )
+        buttonHtml
       ) : null,
       this.state.showRooms ? React.createElement(
         'div',
         { 'class': 'cr-roomlist' },
-        React.createElement(
-          'h3',
-          { 'class': 'userName' },
-          'Step #2: Hello ',
-          this.state.user,
-          ', please choose the chatroom you\'d like to enter:'
-        ),
         React.createElement(
           'ul',
           { 'class': 'roomlist' },
@@ -23936,7 +23940,7 @@ var Chatroom = React.createClass({
     this.props.hideChatRooms();
   },
   goBack: function () {
-    this.setState({ chatRoomSelected: true, showFullChatWindow: false });
+    this.setState({ chatRoomSelected: true, showFullChatWindow: false, unreadMessageCount: 0 });
     this.props.showChatRooms();
   },
   render: function () {
@@ -23978,6 +23982,21 @@ var Chatroom = React.createClass({
       );
     };
 
+    var buttonHtml;
+    if (this.state.currentMessage == '') {
+      buttonHtml = React.createElement(
+        'button',
+        { className: 'btn btn-success', id: 'btn-chat', disabled: 'disabled', onClick: this.sendMessage },
+        'Send'
+      );
+    } else {
+      buttonHtml = React.createElement(
+        'button',
+        { className: 'btn btn-success', id: 'btn-chat', onClick: this.sendMessage },
+        'Send'
+      );
+    }
+
     var latestMessage = '';
 
     if (this.state.showFullChatWindow) {
@@ -24016,11 +24035,7 @@ var Chatroom = React.createClass({
               React.createElement(
                 'span',
                 { className: 'input-group-btn' },
-                React.createElement(
-                  'button',
-                  { className: 'btn btn-success', id: 'btn-chat', onClick: this.sendMessage },
-                  'Send'
-                )
+                buttonHtml
               )
             )
           )
@@ -24041,11 +24056,12 @@ var Chatroom = React.createClass({
           this.props.name,
           this.state.unreadMessageCount > 0 ? React.createElement(
             'small',
-            null,
+            { className: 'red' },
             React.createElement(
               'strong',
               null,
-              ' (',
+              React.createElement('nbsp', null),
+              '(',
               this.state.unreadMessageCount,
               ' unread)'
             )

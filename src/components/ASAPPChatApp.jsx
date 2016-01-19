@@ -29,7 +29,7 @@ var ASAPPChatApp = React.createClass({
     this.setState({showDisplayName: false, showRooms: true});
   },
   onDisplayNameChange: function(e) {
-    this.setState({user: e.target.value});
+      this.setState({user: e.target.value});
   },
   hideChatRooms: function() {
     this.setState({chatRoomSelected: true});
@@ -42,14 +42,20 @@ var ASAPPChatApp = React.createClass({
       return <Chatroom chatRoomSelected={this.state.chatRoomSelected} hideChatRooms={this.hideChatRooms} showChatRooms={this.showChatRooms} name={room.name} user={this.state.user} id={room.id}/>
     };
 
+    var buttonHtml;
+    if (this.state.user == '') {
+      buttonHtml = <button className="btn btn-primary" onClick={this.onSubmit} disabled="disabled">Find A Room</button>
+    } else {
+      buttonHtml = <button className="btn btn-primary" onClick={this.onSubmit} >Find A Room</button>
+    }
+
     return (<div>
       {this.state.showDisplayName ?
-      <div><h3>Step #1: Choose a Display Name</h3><input className="form-control" placeholder="Enter your display name"
+      <div><h3>Choose a Display Name</h3><input className="form-control" placeholder="Enter your display name"
       onChange={this.onDisplayNameChange} value={this.state.user} />
-      <button className="btn btn-primary" onClick={this.onSubmit}>Find A Room</button></div> : null }
+      {buttonHtml}</div> : null }
       {this.state.showRooms ?
         <div class="cr-roomlist">
-        <h3 class="userName">Step #2: Hello {this.state.user}, please choose the chatroom you'd like to enter:</h3>
         <ul class="roomlist">{this.state.rooms.map(renderRoom, this)}</ul></div>
         : null }
       </div>

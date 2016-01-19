@@ -35,7 +35,7 @@ var Chatroom = React.createClass({
     this.props.hideChatRooms();
   },
   goBack: function() {
-    this.setState({chatRoomSelected: true, showFullChatWindow: false});
+    this.setState({chatRoomSelected: true, showFullChatWindow: false, unreadMessageCount: 0});
     this.props.showChatRooms();
   },
   render: function() {
@@ -50,8 +50,14 @@ var Chatroom = React.createClass({
         </li>);
     }
 
-    var latestMessage = '';
+    var buttonHtml;
+    if (this.state.currentMessage == '') {
+      buttonHtml = <button className="btn btn-success" id="btn-chat" disabled="disabled" onClick={this.sendMessage}>Send</button>;
+    } else {
+      buttonHtml = <button className="btn btn-success" id="btn-chat" onClick={this.sendMessage}>Send</button>;
+    }
 
+    var latestMessage = '';
 
     if (this.state.showFullChatWindow) {
       return (
@@ -67,10 +73,7 @@ var Chatroom = React.createClass({
           <div className="panel-footer">
                     <div className="input-group">
                         <input id="btn-input" type="text" className="form-control input-sm" onChange={this.onChange} value={this.state.currentMessage} placeholder="Type your message here..." />
-                        <span className="input-group-btn">
-                            <button className="btn btn-success" id="btn-chat" onClick={this.sendMessage}>
-                                Send</button>
-                        </span>
+                        <span className="input-group-btn">{buttonHtml}</span>
                     </div>
           </div>
         </div>
@@ -82,7 +85,7 @@ var Chatroom = React.createClass({
         latestMessage = this.state.messages[this.state.messages.length - 1].messageText;
       }
       return (<div className=".col-md-8" id={this.props.id}>
-      <h3>{this.props.name}{this.state.unreadMessageCount > 0 ? <small><strong>&nbsp;({this.state.unreadMessageCount} unread)</strong></small> : null}
+      <h3>{this.props.name}{this.state.unreadMessageCount > 0 ? <small className="red"><strong><nbsp></nbsp>({this.state.unreadMessageCount} unread)</strong></small> : null}
         <button className="btn btn-success btn-large" onClick={this.joinRoom}>Join</button>
       </h3>
       {latestMessage != '' ? <h5><small>Last Message: {latestMessage}</small></h5> : null}

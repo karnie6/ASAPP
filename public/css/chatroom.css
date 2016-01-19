@@ -14,12 +14,12 @@
 
 .chat li.left .chat-body
 {
-    margin-left: 60px;
+    margin-left: 30px;
 }
 
 .chat li.right .chat-body
 {
-    margin-right: 60px;
+    margin-right: 30px;
 }
 
 
@@ -38,6 +38,14 @@
 {
     overflow-y: scroll;
     height: 250px;
+}
+
+.btn {
+  margin-left: 5px;
+}
+
+.red {
+  color: red;
 }
 
 ::-webkit-scrollbar-track
