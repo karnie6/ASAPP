@@ -23903,6 +23903,7 @@ module.exports = Base;
 
 },{"react":217}],221:[function(require,module,exports){
 var React = require('react');
+var Emoji = require('./Emoji.jsx');
 var socket = io.connect('/messages');
 
 var Chatroom = React.createClass({
@@ -23946,6 +23947,9 @@ var Chatroom = React.createClass({
   },
   render: function () {
     var renderMessage = function (message) {
+
+      var emojifiedMessage = twemoji.parse(message.messageText);
+
       return React.createElement(
         'li',
         { className: 'left clearfix' },
@@ -23963,7 +23967,7 @@ var Chatroom = React.createClass({
             React.createElement(
               'p',
               null,
-              message.messageText
+              emojifiedMessage
             )
           ) : React.createElement(
             'div',
@@ -24038,7 +24042,8 @@ var Chatroom = React.createClass({
                 'span',
                 { className: 'input-group-btn' },
                 buttonHtml
-              )
+              ),
+              React.createElement(Emoji, null)
             )
           )
         )
@@ -24073,7 +24078,7 @@ var Chatroom = React.createClass({
           React.createElement(
             'button',
             { className: 'btn btn-success btn-large', onClick: this.joinRoom },
-            'Join'
+            'Enter'
           )
         ),
         latestMessage != '' ? React.createElement(
@@ -24094,14 +24099,61 @@ var Chatroom = React.createClass({
 
 module.exports = Chatroom;
 
-},{"react":217}],222:[function(require,module,exports){
+},{"./Emoji.jsx":222,"react":217}],222:[function(require,module,exports){
+var React = require('react');
+
+var emojis = [{ "url": "http://emojione.com/wp-content/uploads/assets/emojis/1f600.svg" }, { "url": "http://emojione.com/wp-content/uploads/assets/emojis/1f62c.svg" }, { "url": "http://emojione.com/wp-content/uploads/assets/emojis/1f601.svg" }];
+
+var Emoji = React.createClass({
+  displayName: "Emoji",
+
+  getInitialState: function () {
+    return { showFullEmojiSet: false };
+  },
+  toggleEmojiSet: function () {
+    var currentStatus = this.state.showFullEmojiSet;
+    this.setState({ showFullEmojiSet: !currentStatus });
+  },
+  render: function () {
+
+    var renderEmoji = function (image) {
+      return React.createElement(
+        "li",
+        { className: "emoji-panel-item" },
+        React.createElement(
+          "div",
+          { className: "chat-body clearfix" },
+          React.createElement("img", { className: "emoji", src: image.url })
+        )
+      );
+    };
+
+    if (this.state.showFullEmojiSet) {
+      return React.createElement(
+        "ul",
+        { className: "emoji" },
+        emojis.map(renderEmoji)
+      );
+    } else {
+      return React.createElement(
+        "div",
+        null,
+        React.createElement("img", { onClick: this.toggleEmojiSet, className: "emoji", src: emojis[0].url })
+      );
+    }
+  }
+});
+
+module.exports = Emoji;
+
+},{"react":217}],223:[function(require,module,exports){
 var React = require('react');
 var ReactDom = require('react-dom');
 var routes = require('./routes.jsx');
 
 ReactDom.render(routes, document.getElementById('main'));
 
-},{"./routes.jsx":223,"react":217,"react-dom":25}],223:[function(require,module,exports){
+},{"./routes.jsx":224,"react":217,"react-dom":25}],224:[function(require,module,exports){
 var React = require('react');
 var ReactRouter = require('react-router');
 
@@ -24121,4 +24173,4 @@ var Routes = React.createElement(
 
 module.exports = Routes;
 
-},{"./components/ASAPPChatApp.jsx":219,"./components/Base.jsx":220,"react":217,"react-router":53}]},{},[222]);
+},{"./components/ASAPPChatApp.jsx":219,"./components/Base.jsx":220,"react":217,"react-router":53}]},{},[223]);

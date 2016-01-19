@@ -48,6 +48,19 @@
   color: red;
 }
 
+.emoji li {
+  display: inline-block;
+  margin-bottom: 1.75em;
+  list-style: none;
+  float: right;
+}
+
+.emoji {
+  width: 25px;
+  float: right;
+  margin-top: 5px;
+}
+
 ::-webkit-scrollbar-track
 {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
