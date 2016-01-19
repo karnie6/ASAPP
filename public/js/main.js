@@ -23798,7 +23798,7 @@ var ASAPPChatApp = React.createClass({
   displayName: 'ASAPPChatApp',
 
   getInitialState: function () {
-    return { user: '', showDisplayName: true, showRooms: false, rooms: [] };
+    return { user: '', showDisplayName: true, showRooms: false, rooms: [], chatRoomSelected: false };
   },
   componentDidMount: function () {
     socket.on('connect', this.initialize);
@@ -23823,9 +23823,12 @@ var ASAPPChatApp = React.createClass({
   onDisplayNameChange: function (e) {
     this.setState({ user: e.target.value });
   },
+  hideChatRooms: function () {
+    this.setState({ chatRoomSelected: true });
+  },
   render: function () {
     var renderRoom = function (room) {
-      return React.createElement(Chatroom, { name: room.name, user: this.state.user, id: room.id });
+      return React.createElement(Chatroom, { chatRoomSelected: this.state.chatRoomSelected, hideChatRooms: this.hideChatRooms, name: room.name, user: this.state.user, id: room.id });
     };
 
     return React.createElement(
@@ -23927,6 +23930,7 @@ var Chatroom = React.createClass({
     e.preventDefault();
     socket.emit('joinroom', { 'roomNumber': this.props.id, 'user': this.props.user });
     this.setState({ showFullChatWindow: true, unreadMessageCount: 0 });
+    this.props.hideChatRooms();
   },
   render: function () {
     var renderMessage = function (message) {
@@ -23989,6 +23993,8 @@ var Chatroom = React.createClass({
           )
         )
       );
+    } else if (this.props.chatRoomSelected) {
+      return null;
     } else {
       if (this.state.messages.length > 0) {
         latestMessage = this.state.messages[this.state.messages.length - 1].messageText;

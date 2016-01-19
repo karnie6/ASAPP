@@ -32,6 +32,7 @@ var Chatroom = React.createClass({
     e.preventDefault();
     socket.emit('joinroom', {'roomNumber':this.props.id, 'user':this.props.user});
     this.setState({showFullChatWindow: true, unreadMessageCount: 0});
+    this.props.hideChatRooms();
   },
   render: function() {
     var renderMessage = function(message) {
@@ -58,7 +59,9 @@ var Chatroom = React.createClass({
   		</div>
   		<div class="rm-newmessage"><input type="text" onChange={this.onChange} value={this.state.currentMessage} class="newmessage" placeholder="Type in your message and press Send!"/><button className="btn btn-primary" onClick={this.sendMessage}>Send</button></div>
   	</div>);
-    } else {
+  } else if (this.props.chatRoomSelected) {
+    return null;
+  } else {
       if (this.state.messages.length > 0) {
         latestMessage = this.state.messages[this.state.messages.length - 1].messageText;
       }

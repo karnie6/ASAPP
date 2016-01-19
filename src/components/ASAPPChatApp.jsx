@@ -6,7 +6,7 @@ var messagesocket = io.connect('/messages');
 
 var ASAPPChatApp = React.createClass({
   getInitialState: function() {
-    return {user: '', showDisplayName: true, showRooms: false, rooms: []};
+    return {user: '', showDisplayName: true, showRooms: false, rooms: [], chatRoomSelected: false};
   },
   componentDidMount: function() {
     socket.on('connect', this.initialize);
@@ -31,9 +31,12 @@ var ASAPPChatApp = React.createClass({
   onDisplayNameChange: function(e) {
     this.setState({user: e.target.value});
   },
+  hideChatRooms: function() {
+    this.setState({chatRoomSelected: true});
+  },
   render: function() {
     var renderRoom = function(room) {
-      return <Chatroom name={room.name} user={this.state.user} id={room.id}/>
+      return <Chatroom chatRoomSelected={this.state.chatRoomSelected} hideChatRooms={this.hideChatRooms} name={room.name} user={this.state.user} id={room.id}/>
     };
 
     return (<div>
