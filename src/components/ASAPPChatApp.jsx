@@ -34,9 +34,12 @@ var ASAPPChatApp = React.createClass({
   hideChatRooms: function() {
     this.setState({chatRoomSelected: true});
   },
+  showChatRooms: function() {
+    this.setState({chatRoomSelected: false});
+  },
   render: function() {
     var renderRoom = function(room) {
-      return <Chatroom chatRoomSelected={this.state.chatRoomSelected} hideChatRooms={this.hideChatRooms} name={room.name} user={this.state.user} id={room.id}/>
+      return <Chatroom chatRoomSelected={this.state.chatRoomSelected} hideChatRooms={this.hideChatRooms} showChatRooms={this.showChatRooms} name={room.name} user={this.state.user} id={room.id}/>
     };
 
     return (<div>

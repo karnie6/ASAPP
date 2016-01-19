@@ -23826,9 +23826,12 @@ var ASAPPChatApp = React.createClass({
   hideChatRooms: function () {
     this.setState({ chatRoomSelected: true });
   },
+  showChatRooms: function () {
+    this.setState({ chatRoomSelected: false });
+  },
   render: function () {
     var renderRoom = function (room) {
-      return React.createElement(Chatroom, { chatRoomSelected: this.state.chatRoomSelected, hideChatRooms: this.hideChatRooms, name: room.name, user: this.state.user, id: room.id });
+      return React.createElement(Chatroom, { chatRoomSelected: this.state.chatRoomSelected, hideChatRooms: this.hideChatRooms, showChatRooms: this.showChatRooms, name: room.name, user: this.state.user, id: room.id });
     };
 
     return React.createElement(
@@ -23932,6 +23935,10 @@ var Chatroom = React.createClass({
     this.setState({ showFullChatWindow: true, unreadMessageCount: 0 });
     this.props.hideChatRooms();
   },
+  goBack: function () {
+    this.setState({ chatRoomSelected: true, showFullChatWindow: false });
+    this.props.showChatRooms();
+  },
   render: function () {
     var renderMessage = function (message) {
       return React.createElement(
@@ -23982,6 +23989,11 @@ var Chatroom = React.createClass({
           { className: 'panel panel-primary' },
           React.createElement(
             'div',
+            { className: 'glyphicon glyphicon-chevron-left', style: { cursor: 'pointer' }, onClick: this.goBack },
+            'Back'
+          ),
+          React.createElement(
+            'div',
             { className: 'panel-heading' },
             this.props.name
           ),
@@ -24021,22 +24033,40 @@ var Chatroom = React.createClass({
         latestMessage = this.state.messages[this.state.messages.length - 1].messageText;
       }
       return React.createElement(
-        'li',
-        { id: this.props.id },
-        this.props.name,
+        'div',
+        { className: '.col-md-8', id: this.props.id },
         React.createElement(
-          'button',
-          { className: 'btn btn-success', onClick: this.joinRoom },
-          'Join'
-        ),
-        React.createElement(
-          'span',
+          'h3',
           null,
-          'Latest Message: ',
-          latestMessage,
-          '. Unread Message Count: ',
-          this.state.unreadMessageCount
-        )
+          this.props.name,
+          this.state.unreadMessageCount > 0 ? React.createElement(
+            'small',
+            null,
+            React.createElement(
+              'strong',
+              null,
+              ' (',
+              this.state.unreadMessageCount,
+              ' unread)'
+            )
+          ) : null,
+          React.createElement(
+            'button',
+            { className: 'btn btn-success btn-large', onClick: this.joinRoom },
+            'Join'
+          )
+        ),
+        latestMessage != '' ? React.createElement(
+          'h5',
+          null,
+          React.createElement(
+            'small',
+            null,
+            'Last Message: ',
+            latestMessage
+          )
+        ) : null,
+        React.createElement('hr', null)
       );
     }
   }

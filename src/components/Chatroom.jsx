@@ -34,14 +34,18 @@ var Chatroom = React.createClass({
     this.setState({showFullChatWindow: true, unreadMessageCount: 0});
     this.props.hideChatRooms();
   },
+  goBack: function() {
+    this.setState({chatRoomSelected: true, showFullChatWindow: false});
+    this.props.showChatRooms();
+  },
   render: function() {
     var renderMessage = function(message) {
       return (
         <li className="left clearfix">
             <div className="chat-body clearfix">
-
-                {message.user == this.props.user ? <div className="header"><strong className="primary-font">{message.user}</strong><p>{message.messageText}</p></div> : <div className="header"><strong className="primary-font pull-right">{message.user}</strong><p style={{clear: 'both'}} className="pull-right">{message.messageText}</p></div>}
-
+                {message.user == this.props.user ?
+                  <div className="header"><strong className="primary-font">{message.user}</strong><p>{message.messageText}</p></div>
+                  : <div className="header"><strong className="primary-font pull-right">{message.user}</strong><p style={{clear: 'both'}} className="pull-right">{message.messageText}</p></div>}
             </div>
         </li>);
     }
@@ -53,6 +57,7 @@ var Chatroom = React.createClass({
       return (
       <div className="row">
         <div className="panel panel-primary">
+         <div className="glyphicon glyphicon-chevron-left" style={{cursor: 'pointer'}} onClick={this.goBack}>Back</div>
           <div className="panel-heading">{this.props.name}</div>
   		    <div className="panel-body">
             <ul className="chat">
@@ -76,7 +81,12 @@ var Chatroom = React.createClass({
       if (this.state.messages.length > 0) {
         latestMessage = this.state.messages[this.state.messages.length - 1].messageText;
       }
-      return (<li id={this.props.id}>{this.props.name}<button className="btn btn-success" onClick={this.joinRoom}>Join</button><span>Latest Message: {latestMessage}. Unread Message Count: {this.state.unreadMessageCount}</span></li> );
+      return (<div className=".col-md-8" id={this.props.id}>
+      <h3>{this.props.name}{this.state.unreadMessageCount > 0 ? <small><strong>&nbsp;({this.state.unreadMessageCount} unread)</strong></small> : null}
+        <button className="btn btn-success btn-large" onClick={this.joinRoom}>Join</button>
+      </h3>
+      {latestMessage != '' ? <h5><small>Last Message: {latestMessage}</small></h5> : null}
+      <hr/></div>);
     }
 
   }
