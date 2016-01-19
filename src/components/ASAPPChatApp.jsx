@@ -54,10 +54,7 @@ var ASAPPChatApp = React.createClass({
       <div><h3>Choose a Display Name</h3><input className="form-control" placeholder="Enter your display name"
       onChange={this.onDisplayNameChange} value={this.state.user} />
       {buttonHtml}</div> : null }
-      {this.state.showRooms ?
-        <div class="cr-roomlist">
-        <ul class="roomlist">{this.state.rooms.map(renderRoom, this)}</ul></div>
-        : null }
+      {this.state.showRooms ? <div><ul class="roomlist">{this.state.rooms.map(renderRoom, this)}</ul></div> : null }
       </div>
       );
   }

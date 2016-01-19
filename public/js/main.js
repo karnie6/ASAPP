@@ -23866,7 +23866,7 @@ var ASAPPChatApp = React.createClass({
       ) : null,
       this.state.showRooms ? React.createElement(
         'div',
-        { 'class': 'cr-roomlist' },
+        null,
         React.createElement(
           'ul',
           { 'class': 'roomlist' },
@@ -23923,6 +23923,7 @@ var Chatroom = React.createClass({
   updateMessages: function (newmessage) {
     var newMessageJson = JSON.parse(newmessage);
 
+    //only if its a message concerning this chatroom do we want to update the state
     if (newMessageJson.roomNumber == this.props.id) {
       var currentMessages = this.state.messages;
       var currentUnreadMessageCount = this.state.unreadMessageCount;
@@ -23999,6 +24000,7 @@ var Chatroom = React.createClass({
 
     var latestMessage = '';
 
+    //if its in showFullChatWindow mode
     if (this.state.showFullChatWindow) {
       return React.createElement(
         'div',
@@ -24042,8 +24044,10 @@ var Chatroom = React.createClass({
         )
       );
     } else if (this.props.chatRoomSelected) {
+      //if its in chat room already selected mode (don't render anything) - this is to prohibit rooms that the user hasn't entered to be displayed on screen
       return null;
     } else {
+      //otherwise, show the option to join the chatroom
       if (this.state.messages.length > 0) {
         latestMessage = this.state.messages[this.state.messages.length - 1].messageText;
       }
@@ -24105,6 +24109,7 @@ var Router = ReactRouter.Router;
 var Route = ReactRouter.Route;
 var browserHistory = ReactRouter.browserHistory;
 
+//don't really need Base now, but adding here in case we need it later
 var Base = require('./components/Base.jsx');
 var ASAPPChatApp = require('./components/ASAPPChatApp.jsx');
 

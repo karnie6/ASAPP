@@ -18,6 +18,7 @@ var Chatroom = React.createClass({
   updateMessages: function(newmessage) {
     var newMessageJson = JSON.parse(newmessage)
 
+    //only if its a message concerning this chatroom do we want to update the state
     if (newMessageJson.roomNumber == this.props.id) {
       var currentMessages = this.state.messages;
       var currentUnreadMessageCount = this.state.unreadMessageCount;
@@ -48,7 +49,7 @@ var Chatroom = React.createClass({
                   : <div className="header"><strong className="primary-font pull-right">{message.user}</strong><p style={{clear: 'both'}} className="pull-right">{message.messageText}</p></div>}
             </div>
         </li>);
-    }
+    };
 
     var buttonHtml;
     if (this.state.currentMessage == '') {
@@ -59,6 +60,7 @@ var Chatroom = React.createClass({
 
     var latestMessage = '';
 
+    //if its in showFullChatWindow mode
     if (this.state.showFullChatWindow) {
       return (
       <div className="row">
@@ -77,10 +79,12 @@ var Chatroom = React.createClass({
                     </div>
           </div>
         </div>
-  	</div>);
+  	</div>)
   } else if (this.props.chatRoomSelected) {
+    //if its in chat room already selected mode (don't render anything) - this is to prohibit rooms that the user hasn't entered to be displayed on screen
     return null;
   } else {
+    //otherwise, show the option to join the chatroom
       if (this.state.messages.length > 0) {
         latestMessage = this.state.messages[this.state.messages.length - 1].messageText;
       }
