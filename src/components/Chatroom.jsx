@@ -1,4 +1,5 @@
 var React = require('react');
+var Emoji = require('./Emoji.jsx');
 var socket = io.connect('/messages');
 
 var Chatroom = React.createClass({
@@ -41,11 +42,14 @@ var Chatroom = React.createClass({
   },
   render: function() {
     var renderMessage = function(message) {
+
+      var emojifiedMessage = twemoji.parse(message.messageText);
+
       return (
         <li className="left clearfix">
             <div className="chat-body clearfix">
                 {message.user == this.props.user ?
-                  <div className="header"><strong className="primary-font">{message.user}</strong><p>{message.messageText}</p></div>
+                  <div className="header"><strong className="primary-font">{message.user}</strong><p>{emojifiedMessage}</p></div>
                   : <div className="header"><strong className="primary-font pull-right">{message.user}</strong><p style={{clear: 'both'}} className="pull-right">{message.messageText}</p></div>}
             </div>
         </li>);
@@ -76,6 +80,7 @@ var Chatroom = React.createClass({
                     <div className="input-group">
                         <input id="btn-input" type="text" className="form-control input-sm" onChange={this.onChange} value={this.state.currentMessage} placeholder="Type your message here..." />
                         <span className="input-group-btn">{buttonHtml}</span>
+                        <Emoji/>
                     </div>
           </div>
         </div>
@@ -90,7 +95,7 @@ var Chatroom = React.createClass({
       }
       return (<div className=".col-md-8" id={this.props.id}>
       <h3>{this.props.name}{this.state.unreadMessageCount > 0 ? <small className="red"><strong><nbsp></nbsp>({this.state.unreadMessageCount} unread)</strong></small> : null}
-        <button className="btn btn-success btn-large" onClick={this.joinRoom}>Join</button>
+        <button className="btn btn-success btn-large" onClick={this.joinRoom}>Enter</button>
       </h3>
       {latestMessage != '' ? <h5><small>Last Message: {latestMessage}</small></h5> : null}
       <hr/></div>);
