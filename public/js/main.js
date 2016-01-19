@@ -23935,20 +23935,37 @@ var Chatroom = React.createClass({
   render: function () {
     var renderMessage = function (message) {
       return React.createElement(
-        'div',
-        { 'class': 'msgbox' },
+        'li',
+        { className: 'left clearfix' },
         React.createElement(
           'div',
-          { 'class': 'user' },
-          message.user
-        ),
-        React.createElement(
-          'div',
-          { 'class': 'msg' },
-          React.createElement(
-            'p',
-            null,
-            message.messageText
+          { className: 'chat-body clearfix' },
+          message.user == this.props.user ? React.createElement(
+            'div',
+            { className: 'header' },
+            React.createElement(
+              'strong',
+              { className: 'primary-font' },
+              message.user
+            ),
+            React.createElement(
+              'p',
+              null,
+              message.messageText
+            )
+          ) : React.createElement(
+            'div',
+            { className: 'header' },
+            React.createElement(
+              'strong',
+              { className: 'primary-font pull-right' },
+              message.user
+            ),
+            React.createElement(
+              'p',
+              { style: { clear: 'both' }, className: 'pull-right' },
+              message.messageText
+            )
           )
         )
       );
@@ -23959,37 +23976,41 @@ var Chatroom = React.createClass({
     if (this.state.showFullChatWindow) {
       return React.createElement(
         'div',
-        { 'class': 'rm-container' },
+        { className: 'row' },
         React.createElement(
           'div',
-          { 'class': 'rm-roomname' },
+          { className: 'panel panel-primary' },
           React.createElement(
-            'h5',
-            null,
+            'div',
+            { className: 'panel-heading' },
             this.props.name
-          )
-        ),
-        React.createElement(
-          'div',
-          { 'class': 'rm-messages' },
+          ),
           React.createElement(
-            'ul',
-            { 'class': 'messages' },
+            'div',
+            { className: 'panel-body' },
             React.createElement(
-              'li',
-              null,
-              this.state.messages.map(renderMessage)
+              'ul',
+              { className: 'chat' },
+              this.state.messages.map(renderMessage, this)
             )
-          )
-        ),
-        React.createElement(
-          'div',
-          { 'class': 'rm-newmessage' },
-          React.createElement('input', { type: 'text', onChange: this.onChange, value: this.state.currentMessage, 'class': 'newmessage', placeholder: 'Type in your message and press Send!' }),
+          ),
           React.createElement(
-            'button',
-            { className: 'btn btn-primary', onClick: this.sendMessage },
-            'Send'
+            'div',
+            { className: 'panel-footer' },
+            React.createElement(
+              'div',
+              { className: 'input-group' },
+              React.createElement('input', { id: 'btn-input', type: 'text', className: 'form-control input-sm', onChange: this.onChange, value: this.state.currentMessage, placeholder: 'Type your message here...' }),
+              React.createElement(
+                'span',
+                { className: 'input-group-btn' },
+                React.createElement(
+                  'button',
+                  { className: 'btn btn-success', id: 'btn-chat', onClick: this.sendMessage },
+                  'Send'
+                )
+              )
+            )
           )
         )
       );
@@ -24005,7 +24026,7 @@ var Chatroom = React.createClass({
         this.props.name,
         React.createElement(
           'button',
-          { className: 'btn btn-primary', onClick: this.joinRoom },
+          { className: 'btn btn-success', onClick: this.joinRoom },
           'Join'
         ),
         React.createElement(

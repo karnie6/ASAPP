@@ -8,11 +8,5 @@ module.exports = function(express, app, config, rooms){
 		});
 	});
 
-	router.get('/chatroom/:id', function(req, res, next){
-		res.render('index', {
-			title: 'Welcome to ASAPP Chatrooms'
-		});
-	});
-
 	app.use('/', router);
 }

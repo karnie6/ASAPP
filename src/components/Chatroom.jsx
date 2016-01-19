@@ -36,28 +36,39 @@ var Chatroom = React.createClass({
   },
   render: function() {
     var renderMessage = function(message) {
-      return (<div class="msgbox">
-      						<div class="user">{message.user}</div>
-      						<div class="msg"><p>{message.messageText}</p></div>
-      					</div>);
+      return (
+        <li className="left clearfix">
+            <div className="chat-body clearfix">
+
+                {message.user == this.props.user ? <div className="header"><strong className="primary-font">{message.user}</strong><p>{message.messageText}</p></div> : <div className="header"><strong className="primary-font pull-right">{message.user}</strong><p style={{clear: 'both'}} className="pull-right">{message.messageText}</p></div>}
+
+            </div>
+        </li>);
     }
 
     var latestMessage = '';
 
 
     if (this.state.showFullChatWindow) {
-      return (<div class="rm-container">
-  		<div class="rm-roomname">
-  			<h5>{this.props.name}</h5>
-  		</div>
-  		<div class="rm-messages">
-  			<ul class="messages">
-  				<li>
-            {this.state.messages.map(renderMessage)}
-  				</li>
-  			</ul>
-  		</div>
-  		<div class="rm-newmessage"><input type="text" onChange={this.onChange} value={this.state.currentMessage} class="newmessage" placeholder="Type in your message and press Send!"/><button className="btn btn-primary" onClick={this.sendMessage}>Send</button></div>
+      return (
+      <div className="row">
+        <div className="panel panel-primary">
+          <div className="panel-heading">{this.props.name}</div>
+  		    <div className="panel-body">
+            <ul className="chat">
+              {this.state.messages.map(renderMessage, this)}
+            </ul>
+          </div>
+          <div className="panel-footer">
+                    <div className="input-group">
+                        <input id="btn-input" type="text" className="form-control input-sm" onChange={this.onChange} value={this.state.currentMessage} placeholder="Type your message here..." />
+                        <span className="input-group-btn">
+                            <button className="btn btn-success" id="btn-chat" onClick={this.sendMessage}>
+                                Send</button>
+                        </span>
+                    </div>
+          </div>
+        </div>
   	</div>);
   } else if (this.props.chatRoomSelected) {
     return null;
@@ -65,7 +76,7 @@ var Chatroom = React.createClass({
       if (this.state.messages.length > 0) {
         latestMessage = this.state.messages[this.state.messages.length - 1].messageText;
       }
-      return (<li id={this.props.id}>{this.props.name}<button className="btn btn-primary" onClick={this.joinRoom}>Join</button><span>Latest Message: {latestMessage}. Unread Message Count: {this.state.unreadMessageCount}</span></li> );
+      return (<li id={this.props.id}>{this.props.name}<button className="btn btn-success" onClick={this.joinRoom}>Join</button><span>Latest Message: {latestMessage}. Unread Message Count: {this.state.unreadMessageCount}</span></li> );
     }
 
   }

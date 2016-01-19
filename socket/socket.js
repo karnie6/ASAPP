@@ -9,11 +9,9 @@ module.exports = function(io, rooms) {
 		socket.on('joinroom', function(data) {
 			socket.user = data.user;
 			socket.join(data.roomNumber);
-			console.log(data.user + ' is connected to chatroom ' + data.roomNumber);
 		});
 
 		socket.on('newMessage', function(data) {
-			console.log(data);
 			socket.broadcast.to(data.roomNumber).emit('messagefeed', JSON.stringify(data));
 			socket.emit('messagefeed', JSON.stringify(data));
 	});
