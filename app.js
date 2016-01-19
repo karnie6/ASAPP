@@ -4,7 +4,7 @@ var express = require('express');
 	session = require('express-session'),
   cookieParser = require('cookie-parser'),
   config = require('./config/config.js'),
-	rooms = ['Room D', 'Room E', 'Room F'];
+	rooms = [{id: 1, 'name': 'Room D'}, {id: 2, 'name': 'Room E'}, {id: 3, 'name': 'Room F'}];
 
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('hogan-express'));

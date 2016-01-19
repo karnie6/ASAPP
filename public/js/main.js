@@ -23790,6 +23790,87 @@ process.umask = function() { return 0; };
 
 },{}],219:[function(require,module,exports){
 var React = require('react');
+var Chatroom = require('./Chatroom.jsx');
+var socket = io.connect('/roomlist');
+var messagesocket = io.connect('/messages');
+
+var ASAPPChatApp = React.createClass({
+  displayName: 'ASAPPChatApp',
+
+  getInitialState: function () {
+    return { user: '', showDisplayName: true, showRooms: false, rooms: [] };
+  },
+  componentDidMount: function () {
+    socket.on('connect', this.initialize);
+    socket.on('roomupdate', this.updateRooms);
+    messagesocket.on('connect', this.initialize);
+    messagesocket.on('messagefeed', this.updateMessages);
+  },
+  initialize: function (data) {
+    console.log("Websocket connected!");
+  },
+  updateRooms: function (data) {
+    var roomData = JSON.parse(data);
+    this.setState({ rooms: roomData });
+    roomData.map(function (room) {
+      messagesocket.emit('joinroom', { 'roomNumber': room.id, 'user': this.state.user });
+    }, this);
+  },
+  onSubmit: function (e) {
+    e.preventDefault();
+    this.setState({ showDisplayName: false, showRooms: true });
+  },
+  onDisplayNameChange: function (e) {
+    this.setState({ user: e.target.value });
+  },
+  render: function () {
+    var renderRoom = function (room) {
+      return React.createElement(Chatroom, { name: room.name, user: this.state.user, id: room.id });
+    };
+
+    return React.createElement(
+      'div',
+      null,
+      this.state.showDisplayName ? React.createElement(
+        'div',
+        null,
+        React.createElement(
+          'h3',
+          null,
+          'Step #1: Choose a Display Name'
+        ),
+        React.createElement('input', { className: 'form-control', placeholder: 'Enter your display name',
+          onChange: this.onDisplayNameChange, value: this.state.user }),
+        React.createElement(
+          'button',
+          { className: 'btn btn-primary', onClick: this.onSubmit },
+          'Find A Room'
+        )
+      ) : null,
+      this.state.showRooms ? React.createElement(
+        'div',
+        { 'class': 'cr-roomlist' },
+        React.createElement(
+          'h3',
+          { 'class': 'userName' },
+          'Step #2: Hello ',
+          this.state.user,
+          ', please choose the chatroom you\'d like to enter:'
+        ),
+        React.createElement(
+          'ul',
+          { 'class': 'roomlist' },
+          this.state.rooms.map(renderRoom, this)
+        )
+      ) : null
+    );
+  }
+});
+
+module.exports = ASAPPChatApp;
+
+},{"./Chatroom.jsx":221,"react":217}],220:[function(require,module,exports){
+var React = require('react');
 
 var Base = React.createClass({
   displayName: 'Base',
@@ -23810,133 +23891,140 @@ var Base = React.createClass({
 
 module.exports = Base;
 
-},{"react":217}],220:[function(require,module,exports){
-var React = require('react');
-
-var DisplayNameComponent = React.createClass({
-  displayName: "DisplayNameComponent",
-
-  getInitialState: function () {
-    return { value: "" };
-  },
-  onChange: function (e) {
-    this.setState({ value: e.target.value });
-  },
-  render: function () {
-    return React.createElement(
-      "div",
-      null,
-      React.createElement(
-        "h3",
-        null,
-        "Step #1: Choose a Display Name"
-      ),
-      React.createElement("input", { className: "form-control", placeholder: "Enter your display name", onChange: this.onChange, value: this.state.value })
-    );
-  }
-});
-
-module.exports = DisplayNameComponent;
-
 },{"react":217}],221:[function(require,module,exports){
 var React = require('react');
-var DisplayNameComponent = require('./DisplayNameComponent.jsx');
+var socket = io.connect('/messages');
 
-var Rooms = React.createClass({
-  displayName: 'Rooms',
-
-  render: function () {
-    var chatRooms = [];
-
-    for (var i = 0; i < this.props.rooms.length; i++) {
-      chatRooms.push(React.createElement(
-        'li',
-        null,
-        this.props.rooms[i]
-      ));
-    }
-
-    return React.createElement(
-      'div',
-      null,
-      React.createElement(
-        'div',
-        { 'class': 'cr-userbox' },
-        React.createElement(
-          'h3',
-          { 'class': 'userName' },
-          'Step #2: Hello ',
-          this.props.displayName,
-          ', please choose the chatroom you\'d like to enter:'
-        )
-      ),
-      React.createElement('div', { 'class': 'cr-roomlist' }),
-      React.createElement(
-        'ul',
-        { 'class': 'roomlist' },
-        chatRooms
-      )
-    );
-  }
-});
-
-module.exports = Rooms;
-
-},{"./DisplayNameComponent.jsx":220,"react":217}],222:[function(require,module,exports){
-var React = require('react');
-var DisplayNameComponent = require('./DisplayNameComponent.jsx');
-var Rooms = require('./Rooms.jsx');
-var socket = io.connect('/roomlist');
-
-var Signup = React.createClass({
-  displayName: 'Signup',
+var Chatroom = React.createClass({
+  displayName: 'Chatroom',
 
   getInitialState: function () {
-    return { showDisplayName: true, showRooms: false, rooms: [] };
+    return { showFullChatWindow: false, currentMessage: '', messages: [], unreadMessageCount: 0 };
   },
   componentDidMount: function () {
     socket.on('connect', this.initialize);
-    socket.on('roomupdate', this.updateRooms);
+    socket.on('messagefeed', this.updateMessages);
   },
-  initialize: function (data) {
-    console.log("Websocket connected!");
+  initialize: function () {},
+  sendMessage: function () {
+    this.setState({ currentMessage: '' });
+    socket.emit('newMessage', { 'messageText': this.state.currentMessage, 'roomNumber': this.props.id, 'user': this.props.user });
   },
-  updateRooms: function (data) {
-    var roomData = JSON.parse(data);
-    this.setState({ rooms: roomData });
+  updateMessages: function (newmessage) {
+    var newMessageJson = JSON.parse(newmessage);
+
+    if (newMessageJson.roomNumber == this.props.id) {
+      var currentMessages = this.state.messages;
+      var currentUnreadMessageCount = this.state.unreadMessageCount;
+      currentMessages.push(newMessageJson);
+      this.setState({ messages: currentMessages, unreadMessageCount: currentUnreadMessageCount + 1 });
+    }
   },
-  onSubmit: function () {
-    this.setState({ showDisplayName: false, showRooms: true });
+  onChange: function (e) {
+    this.setState({ currentMessage: e.target.value });
+  },
+  joinRoom: function (e) {
+    e.preventDefault();
+    socket.emit('joinroom', { 'roomNumber': this.props.id, 'user': this.props.user });
+    this.setState({ showFullChatWindow: true, unreadMessageCount: 0 });
   },
   render: function () {
-    return React.createElement(
-      'div',
-      null,
-      this.state.showDisplayName ? React.createElement(
+    var renderMessage = function (message) {
+      return React.createElement(
         'div',
-        null,
-        React.createElement(DisplayNameComponent, { ref: 'displayName' }),
+        { 'class': 'msgbox' },
+        React.createElement(
+          'div',
+          { 'class': 'user' },
+          message.user
+        ),
+        React.createElement(
+          'div',
+          { 'class': 'msg' },
+          React.createElement(
+            'p',
+            null,
+            message.messageText
+          )
+        )
+      );
+    };
+
+    var latestMessage = '';
+
+    if (this.state.showFullChatWindow) {
+      return React.createElement(
+        'div',
+        { 'class': 'rm-container' },
+        React.createElement(
+          'div',
+          { 'class': 'rm-roomname' },
+          React.createElement(
+            'h5',
+            null,
+            this.props.name
+          )
+        ),
+        React.createElement(
+          'div',
+          { 'class': 'rm-messages' },
+          React.createElement(
+            'ul',
+            { 'class': 'messages' },
+            React.createElement(
+              'li',
+              null,
+              this.state.messages.map(renderMessage)
+            )
+          )
+        ),
+        React.createElement(
+          'div',
+          { 'class': 'rm-newmessage' },
+          React.createElement('input', { type: 'text', onChange: this.onChange, value: this.state.currentMessage, 'class': 'newmessage', placeholder: 'Type in your message and press Send!' }),
+          React.createElement(
+            'button',
+            { className: 'btn btn-primary', onClick: this.sendMessage },
+            'Send'
+          )
+        )
+      );
+    } else {
+      if (this.state.messages.length > 0) {
+        latestMessage = this.state.messages[this.state.messages.length - 1].messageText;
+      }
+      return React.createElement(
+        'li',
+        { id: this.props.id },
+        this.props.name,
         React.createElement(
           'button',
-          { className: 'btn btn-primary', onClick: this.onSubmit },
-          'Find A Room'
+          { className: 'btn btn-primary', onClick: this.joinRoom },
+          'Join'
+        ),
+        React.createElement(
+          'span',
+          null,
+          'Latest Message: ',
+          latestMessage,
+          '. Unread Message Count: ',
+          this.state.unreadMessageCount
         )
-      ) : null,
-      this.state.showRooms ? React.createElement(Rooms, { rooms: this.state.rooms, displayName: this.refs.displayName.state.value }) : null
-    );
+      );
+    }
   }
 });
 
-module.exports = Signup;
+module.exports = Chatroom;
 
-},{"./DisplayNameComponent.jsx":220,"./Rooms.jsx":221,"react":217}],223:[function(require,module,exports){
+},{"react":217}],222:[function(require,module,exports){
 var React = require('react');
 var ReactDom = require('react-dom');
 var routes = require('./routes.jsx');
 
 ReactDom.render(routes, document.getElementById('main'));
 
-},{"./routes.jsx":224,"react":217,"react-dom":25}],224:[function(require,module,exports){
+},{"./routes.jsx":223,"react":217,"react-dom":25}],223:[function(require,module,exports){
 var React = require('react');
 var ReactRouter = require('react-router');
 
@@ -23945,14 +24033,14 @@ var Route = ReactRouter.Route;
 var browserHistory = ReactRouter.browserHistory;
 
 var Base = require('./components/Base.jsx');
-var Signup = require('./components/Signup.jsx');
+var ASAPPChatApp = require('./components/ASAPPChatApp.jsx');
 
 var Routes = React.createElement(
   Router,
   { history: browserHistory },
-  React.createElement(Route, { path: '/', component: Signup })
+  React.createElement(Route, { path: '/', component: ASAPPChatApp })
 );
 
 module.exports = Routes;
 
-},{"./components/Base.jsx":219,"./components/Signup.jsx":222,"react":217,"react-router":53}]},{},[223]);
+},{"./components/ASAPPChatApp.jsx":219,"./components/Base.jsx":220,"react":217,"react-router":53}]},{},[222]);
